@@ -2,25 +2,20 @@ package pw.peterwhite.flights;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
-import pw.peterwhite.flights.config.FlightConfig;
+import pw.peterwhite.flights.config.TestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
-import pw.peterwhite.flights.services.FlightService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = FlightV1Controller.class)
+@Import(TestConfig.class)
 class FlightV1ControllerTests {
-
-    @Autowired
-    private FlightConfig flightConfig;
-
-    @Autowired
-    private FlightService flightService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,7 +23,6 @@ class FlightV1ControllerTests {
     @Test
     void test_givenNothing_getsHello_isOk() throws Exception{
         //given
-
 
         //when
         mockMvc.perform(get("/api/v1/hello"))
@@ -45,7 +39,7 @@ class FlightV1ControllerTests {
 
         //when
         mockMvc.perform(get("/api/v1/Blah"))
-                .andExpect(status().isOk());
+                .andExpect(status().is4xxClientError());
 
         //then
     }
