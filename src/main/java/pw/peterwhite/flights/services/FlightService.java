@@ -2,10 +2,8 @@ package pw.peterwhite.flights.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-public class FlightService {
+public class FlightService implements Service {
     private static final Log logger = LogFactory.getLog(FlightService.class);
 
     public FlightService() {

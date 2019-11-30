@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
 import pw.peterwhite.flights.services.FlightService;
 
 @Configuration
@@ -18,5 +19,4 @@ public class FlightConfig {
         logger.info("Creating new flight service in config");
         return new FlightService();
     }
-
 }
