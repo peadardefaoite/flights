@@ -24,6 +24,6 @@ public class IntegrationTestConfig {
 
     @Bean
     public RyanairApiClient ryanairApiClient() {
-        return spy(RyanairApiClient.class);
+        return spy(new RyanairApiClient(flightConfigProperties()));
     }
 }

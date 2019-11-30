@@ -20,14 +20,10 @@ public class FlightService {
     @Autowired
     private RyanairApiClient ryanairApiClient;
 
-    @Autowired
-    private FlightConfigProperties flightConfigProperties;
-
     public List<Flight> getAvailableFlights(String departure,
                                             String arrival,
                                             LocalDateTime departureDateTime,
                                             LocalDateTime arrivalDateTime) {
-        ryanairApiClient.setBaseUrl(flightConfigProperties.getRyanairApiClientBaseUrl());
         List<Route> routes = ryanairApiClient.getRoutes();
         List<Schedule> schedules = ryanairApiClient.getSchedules();
 

@@ -2,12 +2,14 @@ package pw.peterwhite.flights.clients;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+import pw.peterwhite.flights.config.FlightConfigProperties;
 import pw.peterwhite.flights.dto.Route;
 import pw.peterwhite.flights.dto.Schedule;
 
@@ -17,6 +19,11 @@ import java.util.List;
 
 public class RyanairApiClient extends Client {
     private static final Log logger = LogFactory.getLog(RyanairApiClient.class);
+
+    @Autowired
+    public RyanairApiClient(FlightConfigProperties flightConfigProperties) {
+        this.baseUrl = flightConfigProperties.getRyanairApiClientBaseUrl();
+    }
 
     public List<Route> getRoutes() {
         RestTemplate restTemplate = new RestTemplate();

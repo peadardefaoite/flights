@@ -26,7 +26,8 @@ public class FlightConfig {
     }
 
     @Bean
+    @DependsOn("flightConfigProperties")
     public RyanairApiClient ryanairApiClient() {
-        return new RyanairApiClient();
+        return new RyanairApiClient(flightConfigProperties());
     }
 }
