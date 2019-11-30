@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import static org.mockito.Mockito.*;
 
 @TestConfiguration
-public class TestConfig {
+public class IntegrationTestConfig {
 
     @Bean
     public FlightConfigProperties flightConfigProperties() {
@@ -24,10 +24,6 @@ public class TestConfig {
 
     @Bean
     public RyanairApiClient ryanairApiClient() {
-        RyanairApiClient mockRyanairApiClient = mock(RyanairApiClient.class);
-        when(mockRyanairApiClient.getSchedules()).thenReturn(new ArrayList<>());
-        when(mockRyanairApiClient.getRoutes()).thenReturn(new ArrayList<>());
-        return mockRyanairApiClient;
-
+        return spy(RyanairApiClient.class);
     }
 }

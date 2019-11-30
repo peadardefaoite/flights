@@ -47,7 +47,7 @@ public class FlightV1Controller {
                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime arrivalDateTime) {
         validateParams(departure, arrival, departureDateTime, arrivalDateTime);
         logger.debug("Valid params given");
-        return flightService.getAvailableFlights(departure, arrival, departureDateTime, arrivalDateTime);
+        return flightService.getAvailableFlights(departure.toUpperCase(), arrival.toUpperCase(), departureDateTime, arrivalDateTime);
     }
 
     private void validateParams(String departure,

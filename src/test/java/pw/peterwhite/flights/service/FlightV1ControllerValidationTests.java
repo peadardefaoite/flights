@@ -1,4 +1,4 @@
-package pw.peterwhite.flights;
+package pw.peterwhite.flights.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,16 +9,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import pw.peterwhite.flights.config.LocalDateTimeAdapter;
+
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
 import pw.peterwhite.flights.config.TestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 import pw.peterwhite.flights.dto.Flight;
-import pw.peterwhite.flights.dto.Leg;
+import pw.peterwhite.flights.helpers.TestHelper;
 import pw.peterwhite.flights.services.FlightService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -44,39 +45,13 @@ class FlightV1ControllerValidationTests {
         reset(flightService);
     }
 
-    private List<Flight> generateFlightList(String departure, String arrival,
-                                            String departureDateTimeString, String arrivalDateTimeString) {
-        LocalDateTime departureDateTime = LocalDateTime.parse(departureDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
-        LocalDateTime arrivalDateTime = LocalDateTime.parse(arrivalDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
-
-        Leg leg = new Leg(departure, arrival, departureDateTime, arrivalDateTime);
-        List<Leg> legs = new ArrayList<>();
-        legs.add(leg);
-
-        List<Flight> flightList = new ArrayList<>();
-        flightList.add(new Flight(0, legs));
-
-        return flightList;
-    }
-
-    @Test
-    void Test_NonExistentAPI_isNotFound() throws Exception {
-        //Arrange
-
-        //Act
-        ResultActions resultsActions = mockMvc.perform(get("/api/v1/NonExistentAPI"));
-
-        //Assert
-        resultsActions.andExpect(status().isNotFound());
-        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
-    }
-
     @Test
     void NoParams_Interconnections_isBadRequest() throws Exception {
         //Arrange
 
         //Act
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections"));
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections"))
+                .andDo(MockMvcResultHandlers.print());
 
         //Assert
         resultActions.andExpect(status().isBadRequest());
@@ -95,8 +70,8 @@ class FlightV1ControllerValidationTests {
                 .param("departure", departure)
                 .param("arrival", arrival)
                 .param("departureDateTime", departureDateTimeString)
-                .param("arrivalDateTime", arrivalDateTimeString)
-        );
+                .param("arrivalDateTime", arrivalDateTimeString))
+                .andDo(MockMvcResultHandlers.print());
 
         //Assert
         resultActions.andExpect(status().isBadRequest());
@@ -115,8 +90,8 @@ class FlightV1ControllerValidationTests {
                 .param("departure", departure)
                 .param("arrival", arrival)
                 .param("departureDateTime", departureDateTimeString)
-                .param("arrivalDateTime", arrivalDateTimeString)
-        );
+                .param("arrivalDateTime", arrivalDateTimeString))
+                .andDo(MockMvcResultHandlers.print());
 
         //Assert
         resultActions.andExpect(status().isBadRequest())
@@ -136,8 +111,8 @@ class FlightV1ControllerValidationTests {
                 .param("departure", departure)
                 .param("arrival", arrival)
                 .param("departureDateTime", departureDateTimeString)
-                .param("arrivalDateTime", arrivalDateTimeString)
-        );
+                .param("arrivalDateTime", arrivalDateTimeString))
+                .andDo(MockMvcResultHandlers.print());
 
         //Assert
         resultActions.andExpect(status().isBadRequest())
@@ -157,8 +132,8 @@ class FlightV1ControllerValidationTests {
                 .param("departure", departure)
                 .param("arrival", departure)
                 .param("departureDateTime", departureDateTimeString)
-                .param("arrivalDateTime", arrivalDateTimeString)
-        );
+                .param("arrivalDateTime", arrivalDateTimeString))
+                .andDo(MockMvcResultHandlers.print());
 
         //Assert
         resultActions.andExpect(status().isBadRequest())
@@ -173,17 +148,23 @@ class FlightV1ControllerValidationTests {
         String departureDateTimeString = "2012-12-12T12:00";
         String arrivalDateTimeString = "2012-12-12T14:00";
 
-        List<Flight> flightList = generateFlightList(departure, arrival, departureDateTimeString, arrivalDateTimeString);
+        LocalDateTime departureDateTime = LocalDateTime.parse(departureDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime arrivalDateTime = LocalDateTime.parse(arrivalDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
+
+        List<Flight> flightList = TestHelper.generateFlightList(departure, arrival, departureDateTime, arrivalDateTime);
 
         //Act
         ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
                 .param("departure", departure)
                 .param("arrival", arrival)
                 .param("departureDateTime", departureDateTimeString)
-                .param("arrivalDateTime", arrivalDateTimeString)
-        );
+                .param("arrivalDateTime", arrivalDateTimeString))
+                .andDo(MockMvcResultHandlers.print());
 
         //Assert
         resultActions.andExpect(status().isOk()).andExpect(content().string(gson.toJson(flightList)));
+        verify(flightService, times(1))
+                .getAvailableFlights(departure, arrival, departureDateTime, arrivalDateTime);
+
     }
 }

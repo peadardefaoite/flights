@@ -2,28 +2,49 @@ package pw.peterwhite.flights.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import pw.peterwhite.flights.clients.RyanairApiClient;
+import pw.peterwhite.flights.config.FlightConfigProperties;
 import pw.peterwhite.flights.dto.Flight;
-import pw.peterwhite.flights.dto.Leg;
+import pw.peterwhite.flights.dto.Flight.Leg;
+import pw.peterwhite.flights.dto.Route;
+import pw.peterwhite.flights.dto.Schedule;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlightService implements Service {
+public class FlightService {
     private static final Log logger = LogFactory.getLog(FlightService.class);
+
+    @Autowired
+    private RyanairApiClient ryanairApiClient;
+
+    @Autowired
+    private FlightConfigProperties flightConfigProperties;
 
     public List<Flight> getAvailableFlights(String departure,
                                             String arrival,
                                             LocalDateTime departureDateTime,
                                             LocalDateTime arrivalDateTime) {
+        ryanairApiClient.setBaseUrl(flightConfigProperties.getRyanairApiClientBaseUrl());
+        List<Route> routes = ryanairApiClient.getRoutes();
+        List<Schedule> schedules = ryanairApiClient.getSchedules();
+
+        Flight flight = new Flight();
+        Leg leg = new Leg();
+
+        leg.departureAirport = departure;
+        leg.arrivalAirport = arrival;
+        leg.departureTime = departureDateTime;
+        leg.arrivalTime = arrivalDateTime;
+
+        flight.legs = new ArrayList<>();
+        flight.legs.add(leg);
+        flight.stops = flight.legs.size();
+
         List<Flight> flightList = new ArrayList<>();
-
-        Leg leg = new Leg(departure, arrival, departureDateTime, arrivalDateTime);
-        List<Leg> legs = new ArrayList<>();
-        legs.add(leg);
-
-        flightList.add(new Flight(0, legs));
-
+        flightList.add(flight);
         return flightList;
     }
 }

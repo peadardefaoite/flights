@@ -1,4 +1,4 @@
-package pw.peterwhite.flights.config;
+package pw.peterwhite.flights.helpers;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
