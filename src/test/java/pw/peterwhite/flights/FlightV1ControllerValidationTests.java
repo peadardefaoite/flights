@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = FlightV1Controller.class)
 @Import(TestConfig.class)
-class FlightV1ControllerTests {
+class FlightV1ControllerValidationTests {
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();
@@ -44,18 +44,19 @@ class FlightV1ControllerTests {
         reset(flightService);
     }
 
-    @Test
-    void test_givenNothing_getsHello_isOk() throws Exception {
-        //Arrange
-        when(flightService.getFlightInfo()).thenReturn(3);
+    private List<Flight> generateFlightList(String departure, String arrival,
+                                            String departureDateTimeString, String arrivalDateTimeString) {
+        LocalDateTime departureDateTime = LocalDateTime.parse(departureDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime arrivalDateTime = LocalDateTime.parse(arrivalDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
 
-        //Act
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/hello"));
+        Leg leg = new Leg(departure, arrival, departureDateTime, arrivalDateTime);
+        List<Leg> legs = new ArrayList<>();
+        legs.add(leg);
 
-        //Assert
-        resultActions.andExpect(status().isOk())
-                .andExpect(content().string("Greetings from Spring Boot!"));
-        verify(flightService, times(1)).getFlightInfo();
+        List<Flight> flightList = new ArrayList<>();
+        flightList.add(new Flight(0, legs));
+
+        return flightList;
     }
 
     @Test
@@ -67,11 +68,11 @@ class FlightV1ControllerTests {
 
         //Assert
         resultsActions.andExpect(status().isNotFound());
-        verify(flightService, never()).getFlightInfo();
+        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
     @Test
-    void Test_InterconnectionsNoParams_isBadRequest() throws Exception {
+    void NoParams_Interconnections_isBadRequest() throws Exception {
         //Arrange
 
         //Act
@@ -82,42 +83,11 @@ class FlightV1ControllerTests {
     }
 
     @Test
-    void ValidParams_Interconnections_isOk() throws Exception {
-        //Arrange
-        String departure = "DUB";
-        String arrival = "LHR";
-        String departureDateTimeString = "2012-12-12T12:00";
-        String arrivalDateTimeString = "2012-12-12T14:00";
-
-        LocalDateTime departureDateTime = LocalDateTime.parse(departureDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
-        LocalDateTime arrivalDateTime = LocalDateTime.parse(arrivalDateTimeString, DateTimeFormatter.ISO_DATE_TIME);
-
-        List<Flight> flightList = new ArrayList<>();
-
-        Leg leg = new Leg(departure, arrival, departureDateTime, arrivalDateTime);
-        List<Leg> legs = new ArrayList<>();
-        legs.add(leg);
-
-        flightList.add(new Flight(0, legs));
-
-        //Act
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
-                .param("departure", departure)
-                .param("arrival", arrival)
-                .param("departureDateTime", departureDateTimeString)
-                .param("arrivalDateTime", arrivalDateTimeString)
-        );
-
-        //Assert
-        resultActions.andExpect(status().isOk()).andExpect(content().string(gson.toJson(flightList)));
-    }
-
-    @Test
     void InvalidDateTime_Interconnections_isBadRequest() throws Exception {
         //Arrange
         String departure = "DUB";
         String arrival = "LHR";
-        String departureDateTimeString = "2012-13-13T25:00";
+        String departureDateTimeString = "2012-13-13T25:00"; // Invalid departure, cannot be parsed by LocalDateTime
         String arrivalDateTimeString = "2012-12-12T14:00";
 
         //Act
@@ -132,14 +102,13 @@ class FlightV1ControllerTests {
         resultActions.andExpect(status().isBadRequest());
     }
 
-
     @Test
     void ArrivalBeforeDeparture_Interconnections_isBadRequest() throws Exception {
         //Arrange
         String departure = "DUB";
         String arrival = "LHR";
-        String departureDateTimeString = "2012-12-12T12:00";
-        String arrivalDateTimeString = "2012-11-11T14:00";
+        String departureDateTimeString = "2012-12-12T12:00"; // 12th Dec 2012
+        String arrivalDateTimeString = "2012-11-11T14:00"; // 11th Nov 2012
 
         //Act
         ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
@@ -157,7 +126,7 @@ class FlightV1ControllerTests {
     @Test
     void InvalidAirportParams_Interconnections_isBadRequest() throws Exception {
         //Arrange
-        String departure = "123";
+        String departure = "123"; // Does not match IATA codes
         String arrival = "456";
         String departureDateTimeString = "2012-12-12T12:00";
         String arrivalDateTimeString = "2012-12-12T14:00";
@@ -179,10 +148,32 @@ class FlightV1ControllerTests {
     @Test
     void SameAirportParams_Interconnections_isBadRequest() throws Exception {
         //Arrange
-        String departure = "DUB";
-        String arrival = "DUB";
+        String departure = "DUB"; // Used for both departure and arrival
         String departureDateTimeString = "2012-12-12T12:00";
         String arrivalDateTimeString = "2012-12-12T14:00";
+
+        //Act
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
+                .param("departure", departure)
+                .param("arrival", departure)
+                .param("departureDateTime", departureDateTimeString)
+                .param("arrivalDateTime", arrivalDateTimeString)
+        );
+
+        //Assert
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Departure and arrival codes are the same"));
+    }
+
+    @Test
+    void ValidParams_Interconnections_isOk() throws Exception {
+        //Arrange
+        String departure = "DUB";
+        String arrival = "LHR";
+        String departureDateTimeString = "2012-12-12T12:00";
+        String arrivalDateTimeString = "2012-12-12T14:00";
+
+        List<Flight> flightList = generateFlightList(departure, arrival, departureDateTimeString, arrivalDateTimeString);
 
         //Act
         ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
@@ -193,7 +184,6 @@ class FlightV1ControllerTests {
         );
 
         //Assert
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(status().reason("Departure and arrival codes are the same"));
+        resultActions.andExpect(status().isOk()).andExpect(content().string(gson.toJson(flightList)));
     }
 }

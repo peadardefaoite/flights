@@ -11,8 +11,8 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * This class is necessary for the JSON Serializing for the API Response into the LocalDateTime format of
- * 'YYYY-MM-DDTHH:MM'. Otherwise the JSON serializer will marshall LocalDateTime fields into JSON rather than a String
- * format as above.
+ * 'YYYY-MM-DDTHH:MM' eg '2019-12-11T12:34'. Otherwise the JSON serializer will marshall LocalDateTime fields into JSON
+ * rather than a String format as above.
  *
  * This is only used in test code.
  */
