@@ -27,6 +27,7 @@ public class FlightService {
         List<Route> routes = ryanairApiClient.getRoutes();
         List<Schedule> schedules = ryanairApiClient.getSchedules();
 
+        //TODO: proper logic to use routes and schedules to determine available flights
         Flight flight = new Flight();
         Leg leg = new Leg();
 

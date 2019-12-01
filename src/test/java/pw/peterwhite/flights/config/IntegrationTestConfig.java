@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Bean;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.services.FlightService;
 
-import java.util.ArrayList;
-
 import static org.mockito.Mockito.*;
 
 @TestConfiguration

@@ -3,10 +3,9 @@ package pw.peterwhite.flights.config;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
 
+import org.springframework.web.client.RestTemplate;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.services.FlightService;
 
@@ -29,5 +28,10 @@ public class FlightConfig {
     @DependsOn("flightConfigProperties")
     public RyanairApiClient ryanairApiClient() {
         return new RyanairApiClient(flightConfigProperties());
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

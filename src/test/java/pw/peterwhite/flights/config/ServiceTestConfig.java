@@ -2,6 +2,7 @@ package pw.peterwhite.flights.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.services.FlightService;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import static org.mockito.Mockito.*;
 
 @TestConfiguration
-public class TestConfig {
+public class ServiceTestConfig {
 
     @Bean
     public FlightConfigProperties flightConfigProperties() {
@@ -28,6 +29,10 @@ public class TestConfig {
         when(mockRyanairApiClient.getSchedules()).thenReturn(new ArrayList<>());
         when(mockRyanairApiClient.getRoutes()).thenReturn(new ArrayList<>());
         return mockRyanairApiClient;
+    }
 
+    @Bean
+    public RestTemplate restTemplate() {
+        return mock(RestTemplate.class);
     }
 }

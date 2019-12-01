@@ -2,6 +2,7 @@ package pw.peterwhite.flights.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
-import pw.peterwhite.flights.config.TestConfig;
+import pw.peterwhite.flights.config.ServiceTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 import pw.peterwhite.flights.dto.Flight;
 import pw.peterwhite.flights.helpers.TestHelper;
@@ -20,6 +21,7 @@ import pw.peterwhite.flights.services.FlightService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -27,8 +29,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Service tests for validation of request parameters in the FlightV1Controller class.
+ * Network requests are not made in
+ */
 @WebMvcTest(controllers = FlightV1Controller.class)
-@Import(TestConfig.class)
+@Import(ServiceTestConfig.class)
 class FlightV1ControllerValidationTests {
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
@@ -42,6 +48,10 @@ class FlightV1ControllerValidationTests {
 
     @BeforeEach
     private void setup() {
+    }
+
+    @AfterEach
+    private void teardown() {
         reset(flightService);
     }
 
@@ -55,6 +65,7 @@ class FlightV1ControllerValidationTests {
 
         //Assert
         resultActions.andExpect(status().isBadRequest());
+        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
     @Test
@@ -75,6 +86,7 @@ class FlightV1ControllerValidationTests {
 
         //Assert
         resultActions.andExpect(status().isBadRequest());
+        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
     @Test
@@ -96,6 +108,7 @@ class FlightV1ControllerValidationTests {
         //Assert
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Arrival time is before departure time"));
+        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
     @Test
@@ -117,6 +130,7 @@ class FlightV1ControllerValidationTests {
         //Assert
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Invalid departure or arrival codes"));
+        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
 
@@ -138,11 +152,16 @@ class FlightV1ControllerValidationTests {
         //Assert
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Departure and arrival codes are the same"));
+        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
     @Test
     void ValidParams_Interconnections_isOk() throws Exception {
         //Arrange
+        when(flightService.getAvailableFlights(anyString(), anyString(),
+                any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(new ArrayList<>());
+
         String departure = "DUB";
         String arrival = "LHR";
         String departureDateTimeString = "2012-12-12T12:00";
@@ -165,6 +184,5 @@ class FlightV1ControllerValidationTests {
         resultActions.andExpect(status().isOk()).andExpect(content().string(gson.toJson(flightList)));
         verify(flightService, times(1))
                 .getAvailableFlights(departure, arrival, departureDateTime, arrivalDateTime);
-
     }
 }

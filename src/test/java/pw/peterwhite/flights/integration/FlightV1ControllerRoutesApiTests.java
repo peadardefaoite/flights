@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = FlightV1Controller.class)
 @Import(IntegrationTestConfig.class)
-class FlightV1ControllerRoutesApiIntegrationTest {
+class FlightV1ControllerRoutesApiTests {
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();

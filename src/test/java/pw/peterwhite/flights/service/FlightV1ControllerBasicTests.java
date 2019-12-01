@@ -11,11 +11,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import pw.peterwhite.flights.config.TestConfig;
+import pw.peterwhite.flights.config.ServiceTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 
+/**
+ * Basic service level test for Spring functionality. Hits non-existent endpoint, returns 404.
+ * No network requests are made in this test.
+ */
 @WebMvcTest(controllers = FlightV1Controller.class)
-@Import(TestConfig.class)
+@Import(ServiceTestConfig.class)
 class FlightV1ControllerBasicTests {
     @Autowired
     private MockMvc mockMvc;
@@ -31,5 +35,4 @@ class FlightV1ControllerBasicTests {
         //Assert
         resultsActions.andExpect(status().isNotFound());
     }
-
 }

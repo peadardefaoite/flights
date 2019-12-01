@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
-import pw.peterwhite.flights.config.TestConfig;
+import pw.peterwhite.flights.config.ServiceTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 import pw.peterwhite.flights.dto.Flight;
 import pw.peterwhite.flights.helpers.TestHelper;
@@ -21,7 +21,6 @@ import pw.peterwhite.flights.services.FlightService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -29,8 +28,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Service tests for
+ */
 @WebMvcTest(controllers = FlightV1Controller.class)
-@Import(TestConfig.class)
+@Import(ServiceTestConfig.class)
 class FlightV1ControllerClientTests {
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
