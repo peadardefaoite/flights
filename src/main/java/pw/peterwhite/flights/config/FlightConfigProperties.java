@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 
-import java.net.URI;
-
 @ConfigurationProperties(prefix="flight")
 public class FlightConfigProperties {
     private static final Log logger = LogFactory.getLog(FlightConfigProperties.class);
@@ -19,6 +17,7 @@ public class FlightConfigProperties {
 
     public String getRyanairApiClientBaseUrl() {
         if (ryanairApiClientBaseUrl == null) {
+            // No ryanairApiClientBaseUrl defined in properties, reading from environment and caching, as environment reads are expensive
             ryanairApiClientBaseUrl = env.getProperty("ryanairApiClientBaseUrl", "https://services-api.ryanair.com");
         }
         return ryanairApiClientBaseUrl;

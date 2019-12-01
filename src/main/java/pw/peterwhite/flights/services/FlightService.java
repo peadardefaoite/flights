@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import pw.peterwhite.flights.clients.RyanairApiClient;
-import pw.peterwhite.flights.config.FlightConfigProperties;
 import pw.peterwhite.flights.dto.Flight;
 import pw.peterwhite.flights.dto.Flight.Leg;
 import pw.peterwhite.flights.dto.Route;
