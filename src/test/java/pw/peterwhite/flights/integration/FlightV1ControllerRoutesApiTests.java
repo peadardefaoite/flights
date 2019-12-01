@@ -2,6 +2,7 @@ package pw.peterwhite.flights.integration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,10 @@ class FlightV1ControllerRoutesApiIntegrationTest {
 
     @BeforeEach
     private void setup() {
+    }
+
+    @AfterEach
+    private void teardown() {
         reset(flightService);
         reset(ryanairApiClient);
     }
