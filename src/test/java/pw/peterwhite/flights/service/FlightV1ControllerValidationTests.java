@@ -10,12 +10,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
 import pw.peterwhite.flights.config.ServiceTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 import pw.peterwhite.flights.dto.Flight;
+import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
 import pw.peterwhite.flights.helpers.TestHelper;
 import pw.peterwhite.flights.services.FlightService;
 
@@ -48,6 +47,7 @@ class FlightV1ControllerValidationTests {
 
     @BeforeEach
     private void setup() {
+        reset(flightService);
     }
 
     @AfterEach

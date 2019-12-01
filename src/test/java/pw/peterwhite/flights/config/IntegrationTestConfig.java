@@ -2,10 +2,11 @@ package pw.peterwhite.flights.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.services.FlightService;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
 
 @TestConfiguration
 public class IntegrationTestConfig {
@@ -23,5 +24,10 @@ public class IntegrationTestConfig {
     @Bean
     public RyanairApiClient ryanairApiClient() {
         return spy(new RyanairApiClient(flightConfigProperties()));
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return spy(RestTemplate.class);
     }
 }

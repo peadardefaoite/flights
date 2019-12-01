@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.config.IntegrationTestConfig;
@@ -25,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
