@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(controllers = FlightV1Controller.class)
 @Import(ServiceTestConfig.class)
-class FlightV1ControllerBasicTests {
+class FlightV1ControllerBasicServiceTest {
     @Autowired
     private MockMvc mockMvc;
 

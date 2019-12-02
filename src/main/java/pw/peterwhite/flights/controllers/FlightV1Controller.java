@@ -64,6 +64,10 @@ public class FlightV1Controller {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure and arrival codes are the same");
         }
 
+        if (departureDateTime.isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure time is in the past");
+        }
+
         if (arrivalDateTime.isBefore(departureDateTime)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arrival time is before departure time");
         }
