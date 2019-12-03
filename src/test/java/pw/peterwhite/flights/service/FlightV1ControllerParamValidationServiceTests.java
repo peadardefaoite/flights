@@ -105,7 +105,7 @@ class FlightV1ControllerParamValidationServiceTests {
 
         //Assert
         resultActions.andExpect(status().isBadRequest())
-                .andExpect(status().reason("Departure time is in the past"));
+                .andExpect(status().reason("Departure date is in the past"));
         verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 

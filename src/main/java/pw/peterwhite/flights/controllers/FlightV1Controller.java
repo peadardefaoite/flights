@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pw.peterwhite.flights.dto.Journey;
 import pw.peterwhite.flights.services.FlightService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -54,8 +55,11 @@ public class FlightV1Controller {
                                 String arrival,
                                 LocalDateTime departureDateTime,
                                 LocalDateTime arrivalDateTime) {
-        if (departureDateTime.isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure time is in the past");
+        if (departureDateTime.toLocalDate().isBefore(LocalDate.now())) {
+            // Use date instead of date-time as if the user submits the current minute, it may be a valid request
+            // but by the time this code is reached, LocalDateTime.now() might be in the next minute. This will happen
+            // much less with LocalDate and only potentially near when midnight occurs.
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure date is in the past");
         }
 
         if (arrivalDateTime.isBefore(departureDateTime)) {
@@ -63,8 +67,9 @@ public class FlightV1Controller {
         }
 
         // Non-null departure/arrival Strings and also matching regex for IATA format (3-letter code)
-        if (departure == null || !departure.toUpperCase().matches("^[A-Z]{3}$")
-                || arrival == null || !arrival.toUpperCase().matches("^[A-Z]{3}$")) {
+        if (departure == null || arrival == null
+                || !departure.toUpperCase().matches("^[A-Z]{3}$")
+                || !arrival.toUpperCase().matches("^[A-Z]{3}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid departure or arrival codes");
         }
 
