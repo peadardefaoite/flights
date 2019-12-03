@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import pw.peterwhite.flights.clients.RyanairApiClient;
+import pw.peterwhite.flights.config.FlightConfigProperties;
 import pw.peterwhite.flights.dto.Journey;
 import pw.peterwhite.flights.dto.Journey.Leg;
 import pw.peterwhite.flights.dto.Route;
@@ -19,11 +20,14 @@ public class FlightService {
     private static final Log logger = LogFactory.getLog(FlightService.class);
 
     @Autowired
+    private FlightConfigProperties flightConfigProperties;
+
+    @Autowired
     private RyanairApiClient ryanairApiClient;
 
     /* Requirements for finding suitable routes between departure airport and arrival airport:
         - connectingAirport is null
-        - operator is "RYANAIR"
+        - operator is "RYANAIR" (read from config)
         - in the case of zero stops: airportFrom matches departure airport AND airportTo matches arrival airport
         - in the case of one stop: airportFrom matches departure airport OR airportTo matches arrival airport, this will
             result in two lists, and we need to filter those based on the airportTo of departure airport matching the
@@ -35,11 +39,11 @@ public class FlightService {
                                              LocalDateTime arrivalDateTime) {
         logger.info(String.format("Getting flights from %s-%s between %s and %s", departure, arrival, departureDateTime, arrivalDateTime));
 
-        logger.info("Making request to Routes API");
         List<Route> allRoutes = ryanairApiClient.getRoutes();
         logger.info("Total routes: " + allRoutes.size());
 
-        allRoutes.removeIf(route -> route.connectingAirport != null || !Objects.equals(route.operator, "RYANAIR"));
+        String routeOperator = flightConfigProperties.getRouteOperator();
+        allRoutes.removeIf(route -> route.getConnectingAirport() != null || !Objects.equals(route.getOperator(), routeOperator));
 
         if (allRoutes.size() == 0) {
             logger.info("No available routes");
@@ -49,7 +53,7 @@ public class FlightService {
         List<Journey> journeyList = new ArrayList<>();
 
         // Direct flights
-        Predicate<Route> isDirectFlight = route -> departure.equals(route.airportFrom) && arrival.equals(route.airportTo);
+        Predicate<Route> isDirectFlight = route -> departure.equals(route.getAirportFrom()) && arrival.equals(route.getAirportTo());
         List<Route> directRoutes = allRoutes.stream().filter(isDirectFlight).collect(Collectors.toList());
 
         if (directRoutes.size() > 1) {
@@ -74,18 +78,18 @@ public class FlightService {
 
         // Journeys with 1 stop
 
-        Predicate<Route> isDepartureRoute = route -> departure.equals(route.airportFrom);
+        Predicate<Route> isDepartureRoute = route -> departure.equals(route.getAirportFrom());
         List<Route> departureRoutes = allRoutes.stream().filter(isDepartureRoute).collect(Collectors.toList());
 
-        Predicate<Route> isArrivalRoute = route -> arrival.equals(route.airportTo);
+        Predicate<Route> isArrivalRoute = route -> arrival.equals(route.getAirportTo());
         List<Route> arrivalRoutes = allRoutes.stream().filter(isArrivalRoute).collect(Collectors.toList());
 
         // Remove route from both Lists if the intermediate airport doesn't match, that is,
         // any(airportTo) of departureRoutes != any(airportFrom) of arrivalRoutes
         departureRoutes.removeIf(departureRoute -> arrivalRoutes.stream()
-                .noneMatch(arrivalRoute -> Objects.equals(arrivalRoute.airportFrom, departureRoute.airportTo)));
+                .noneMatch(arrivalRoute -> Objects.equals(arrivalRoute.getAirportFrom(), departureRoute.getAirportTo())));
         arrivalRoutes.removeIf(arrivalRoute -> departureRoutes.stream()
-                .noneMatch(departureRoute -> Objects.equals(departureRoute.airportTo, arrivalRoute.airportFrom)));
+                .noneMatch(departureRoute -> Objects.equals(departureRoute.getAirportTo(), arrivalRoute.getAirportFrom())));
 
         if (departureRoutes.size() != arrivalRoutes.size()) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Bad data from the Routes API");
@@ -94,20 +98,24 @@ public class FlightService {
         logger.info("Available indirect flights: " + departureRoutes.size());
 
         // Sort our ArrayLists so that the departureRoutes[i].airportTo == arrivalRoutes[i].airportFrom
-        departureRoutes.sort(Comparator.comparing(route -> route.airportTo));
-        arrivalRoutes.sort(Comparator.comparing(route -> route.airportFrom));
-
-        // TODO: Need schedules below
+        departureRoutes.sort(Comparator.comparing(Route::getAirportTo));
+        arrivalRoutes.sort(Comparator.comparing(Route::getAirportFrom));
 
         Iterator<Route> departureIterator = departureRoutes.iterator();
         Iterator<Route> arrivalIterator = arrivalRoutes.iterator();
-
         while (departureIterator.hasNext() && arrivalIterator.hasNext()) {
             Route departureRoute = departureIterator.next();
             Route arrivalRoute = arrivalIterator.next();
 
             List<Leg> departureLegs = ryanairApiClient.getSchedules(departureRoute, departureDateTime, arrivalDateTime.minusHours(2));
             List<Leg> arrivalLegs = ryanairApiClient.getSchedules(arrivalRoute, departureDateTime.plusHours(2), arrivalDateTime);
+
+            if (departureLegs.isEmpty() || arrivalLegs.isEmpty()) {
+                continue;
+            }
+
+            logger.info("");
+
 
             //Leg departureLeg = new Leg(departureRoute.airportFrom, departureRoute.airportTo, null, null);
             //Leg arrivalLeg = new Leg(arrivalRoute.airportFrom, arrivalRoute.airportTo, null, null);

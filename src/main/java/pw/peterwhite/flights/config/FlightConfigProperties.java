@@ -10,6 +10,7 @@ public class FlightConfigProperties {
     private Environment env;
 
     private String ryanairApiClientBaseUrl;
+    private String routeOperator;
 
     public String getRyanairApiClientBaseUrl() {
         if (ryanairApiClientBaseUrl == null) {
@@ -23,4 +24,15 @@ public class FlightConfigProperties {
         this.ryanairApiClientBaseUrl = ryanairApiClientBaseUrl;
     }
 
+    public String getRouteOperator() {
+        if (routeOperator == null) {
+            // No routeOperator defined in properties, reading from environment and caching, as environment reads are expensive
+            routeOperator = env.getProperty("routeOperator", "RYANAIR");
+        }
+        return routeOperator;
+    }
+
+    public void setRouteOperator(String routeOperator) {
+        this.routeOperator = routeOperator;
+    }
 }
