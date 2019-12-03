@@ -15,6 +15,10 @@ public class Schedule {
     private int month;
     private List<DayFlights> days;
 
+    public Schedule() {
+        // For testing only
+    }
+
     @JsonCreator
     public Schedule(@JsonProperty("month") int month,
                     @JsonProperty("days") List<DayFlights> days) {

@@ -1,0 +1,385 @@
+{
+    "month": 1,
+    "days": [
+        {
+            "day": 1,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "9101",
+                    "departureTime": "12:45",
+                    "arrivalTime": "16:55"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "14:45",
+                    "arrivalTime": "18:55"
+                }
+            ]
+        },
+        {
+            "day": 2,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:45",
+                    "arrivalTime": "10:55"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "9101",
+                    "departureTime": "12:05",
+                    "arrivalTime": "16:15"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "5910",
+                    "departureTime": "13:05",
+                    "arrivalTime": "17:15"
+                }
+            ]
+        },
+        {
+            "day": 3,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:15",
+                    "arrivalTime": "11:25"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "9101",
+                    "departureTime": "09:35",
+                    "arrivalTime": "13:45"
+                }
+            ]
+        },
+        {
+            "day": 4,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "9101",
+                    "departureTime": "08:40",
+                    "arrivalTime": "12:50"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "5910",
+                    "departureTime": "13:55",
+                    "arrivalTime": "18:05"
+                }
+            ]
+        },
+        {
+            "day": 5,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "9101",
+                    "departureTime": "11:40",
+                    "arrivalTime": "15:50"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "14:00",
+                    "arrivalTime": "18:10"
+                }
+            ]
+        },
+        {
+            "day": 6,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:20",
+                    "arrivalTime": "11:30"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "9101",
+                    "departureTime": "12:45",
+                    "arrivalTime": "16:55"
+                }
+            ]
+        },
+        {
+            "day": 7,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "9101",
+                    "departureTime": "12:45",
+                    "arrivalTime": "16:55"
+                }
+            ]
+        },
+        {
+            "day": 8,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:00",
+                    "arrivalTime": "11:10"
+                }
+            ]
+        },
+        {
+            "day": 9,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:45",
+                    "arrivalTime": "10:55"
+                }
+            ]
+        },
+        {
+            "day": 10,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:15",
+                    "arrivalTime": "11:25"
+                }
+            ]
+        },
+        {
+            "day": 11,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "5910",
+                    "departureTime": "13:55",
+                    "arrivalTime": "18:05"
+                }
+            ]
+        },
+        {
+            "day": 12,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "14:00",
+                    "arrivalTime": "18:10"
+                }
+            ]
+        },
+        {
+            "day": 13,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:20",
+                    "arrivalTime": "11:30"
+                }
+            ]
+        },
+        {
+            "day": 14,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                }
+            ]
+        },
+        {
+            "day": 16,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:45",
+                    "arrivalTime": "10:55"
+                }
+            ]
+        },
+        {
+            "day": 17,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:15",
+                    "arrivalTime": "11:25"
+                }
+            ]
+        },
+        {
+            "day": 18,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "5910",
+                    "departureTime": "13:55",
+                    "arrivalTime": "18:05"
+                }
+            ]
+        },
+        {
+            "day": 19,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "14:00",
+                    "arrivalTime": "18:10"
+                }
+            ]
+        },
+        {
+            "day": 20,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:20",
+                    "arrivalTime": "11:30"
+                }
+            ]
+        },
+        {
+            "day": 21,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                }
+            ]
+        },
+        {
+            "day": 23,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:45",
+                    "arrivalTime": "10:55"
+                }
+            ]
+        },
+        {
+            "day": 24,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:15",
+                    "arrivalTime": "11:25"
+                }
+            ]
+        },
+        {
+            "day": 25,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                },
+                {
+                    "carrierCode": "FR",
+                    "number": "5910",
+                    "departureTime": "13:55",
+                    "arrivalTime": "18:05"
+                }
+            ]
+        },
+        {
+            "day": 26,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "14:00",
+                    "arrivalTime": "18:10"
+                }
+            ]
+        },
+        {
+            "day": 27,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:20",
+                    "arrivalTime": "11:30"
+                }
+            ]
+        },
+        {
+            "day": 28,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:25",
+                    "arrivalTime": "10:35"
+                }
+            ]
+        },
+        {
+            "day": 30,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "06:45",
+                    "arrivalTime": "10:55"
+                }
+            ]
+        },
+        {
+            "day": 31,
+            "flights": [
+                {
+                    "carrierCode": "FR",
+                    "number": "7124",
+                    "departureTime": "07:15",
+                    "arrivalTime": "11:25"
+                }
+            ]
+        }
+    ]
+}

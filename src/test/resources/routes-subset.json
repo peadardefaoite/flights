@@ -1,158 +1,68 @@
 [
   {
     "airportFrom": "ACE",
-    "airportTo": "ATH",
-    "connectingAirport": "BGY",
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "GENERIC",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
-  },
-  {
-    "airportFrom": "AMS",
-    "airportTo": "DUB",
+    "airportTo": "SXF",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
     "airportFrom": "BCN",
     "airportTo": "SXF",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
-    "airportFrom": "BRU",
-    "airportTo": "SXF",
+    "airportFrom": "DUB",
+    "airportTo": "ACE",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
     "airportFrom": "DUB",
     "airportTo": "AMS",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
     "airportFrom": "DUB",
     "airportTo": "BCN",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
     "airportFrom": "DUB",
-    "airportTo": "BRU",
+    "airportTo": "LGW",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
-  },
-  {
-    "airportFrom": "DUB",
-    "airportTo": "MUC",
-    "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
     "airportFrom": "DUB",
     "airportTo": "SXF",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
-    "airportFrom": "MAD",
-    "airportTo": "ORK",
-    "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
-  },
-  {
-    "airportFrom": "MUC",
-    "airportTo": "NOC",
-    "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
-  },
-  {
-    "airportFrom": "NOC",
+    "airportFrom": "EVN",
     "airportTo": "SXF",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "RYANAIR",
-    "group": "CITY",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "FR"
+    "operator": "RYANAIR"
   },
   {
-    "airportFrom": "ZRH",
-    "airportTo": "MLA",
+    "airportFrom": "MLA",
+    "airportTo": "TUN",
     "connectingAirport": null,
-    "newRoute": false,
-    "seasonalRoute": false,
-    "operator": "AIR_MALTA",
-    "group": "GENERIC",
-    "similarArrivalAirportCodes": [],
-    "tags": [],
-    "carrierCode": "KM"
+    "operator": "AIR_MALTA"
+  },
+  {
+    "airportFrom": "SXF",
+    "airportTo": "DUB",
+    "connectingAirport": null,
+    "operator": "RYANAIR"
+  },
+  {
+    "airportFrom": "VNO",
+    "airportTo": "CAG",
+    "connectingAirport": "BGY",
+    "operator": "RYANAIR"
   }
 ]

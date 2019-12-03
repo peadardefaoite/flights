@@ -1,0 +1,325 @@
+{
+    "month": 1,
+    "days": [
+        {
+            "day": 1,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 2,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 3,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 4,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 5,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 6,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 7,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 8,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 9,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 10,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 11,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 12,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 13,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 14,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 16,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 17,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 18,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 19,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 20,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 21,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 23,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 24,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 25,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 26,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 27,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 28,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 30,
+            "flights": [
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        },
+        {
+            "day": 31,
+            "flights": [
+                {
+                    "departureTime": "06:35",
+                    "arrivalTime": "09:20"
+                },
+                {
+                    "departureTime": "16:25",
+                    "arrivalTime": "19:10"
+                }
+            ]
+        }
+    ]
+}
