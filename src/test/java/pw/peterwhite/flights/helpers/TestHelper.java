@@ -53,11 +53,11 @@ public class TestHelper {
         if (routes == null) {
             File file;
             try {
-                file = ResourceUtils.getFile("classpath:routes.json");
+                file = ResourceUtils.getFile("classpath:routes-subset.json");
                 ObjectMapper mapper = new ObjectMapper();
                 routes = mapper.readValue(file, new TypeReference<List<Route>>(){});
             } catch (FileNotFoundException ex) {
-                fail("routes.json not found for tests");
+                fail("routes-subset.json not found for tests");
             } catch (IOException ex) {
                 fail("Reading json file failed");
             }

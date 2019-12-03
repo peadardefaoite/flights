@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -15,10 +17,14 @@ import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.config.ClientTestConfig;
 import pw.peterwhite.flights.config.ServiceTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
+import pw.peterwhite.flights.dto.Route;
+import pw.peterwhite.flights.dto.Schedule;
 import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
 import pw.peterwhite.flights.helpers.TestHelper;
 
+import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,7 +59,12 @@ class FlightV1ControllerRyanairApiClientTests {
     @Test
     void ValidParams_Interconnections_isOk() throws Exception {
         //Arrange
-
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), eq(null),
+                eq(new ParameterizedTypeReference<List<Route>>(){})))
+                .thenReturn(null);
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), eq(null),
+                eq(Schedule.class)))
+                .thenReturn(null);
 
         //Act
         ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")

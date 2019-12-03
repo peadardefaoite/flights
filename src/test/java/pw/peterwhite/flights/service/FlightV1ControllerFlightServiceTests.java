@@ -70,6 +70,6 @@ class FlightV1ControllerFlightServiceTests {
         resultActions.andExpect(status().isOk()).andExpect(content().string("[]"));
 
         verify(ryanairApiClient, times(1)).getRoutes();
-        verify(ryanairApiClient, times(1)).getSchedules(any(), any(), any());
+        verify(ryanairApiClient, times(5)).getSchedules(any(), any(), any());
     }
 }
