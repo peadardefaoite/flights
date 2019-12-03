@@ -35,8 +35,8 @@ public class FlightV1Controller {
      *
      * @param departure - IATA code for departure airport
      * @param arrival - IATA code for arrival airport
-     * @param departureDateTime - Departure date-time
-     * @param arrivalDateTime - Arrival date-time
+     * @param departureDateTime - Departure date-time in departure airport timezone
+     * @param arrivalDateTime - Arrival date-time in arrival airport timezone
      * @return List of available flights with details of stops and each leg
      */
     @RequestMapping(path = "/interconnections",
@@ -55,20 +55,25 @@ public class FlightV1Controller {
                                 String arrival,
                                 LocalDateTime departureDateTime,
                                 LocalDateTime arrivalDateTime) {
-        if (departureDateTime.toLocalDate().isBefore(LocalDate.now())) {
+        if (departureDateTime == null || arrivalDateTime == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure/arrival date-times must be provided");
+        }
+
+        if (departure == null || arrival == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid departure or arrival codes");
+        }
+
+
+        LocalDate today = LocalDate.now();
+        if (departureDateTime.toLocalDate().isBefore(today)) {
             // Use date instead of date-time as if the user submits the current minute, it may be a valid request
             // but by the time this code is reached, LocalDateTime.now() might be in the next minute. This will happen
             // much less with LocalDate and only potentially near when midnight occurs.
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure date is in the past");
         }
 
-        if (arrivalDateTime.isBefore(departureDateTime)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arrival time is before departure time");
-        }
-
         // Non-null departure/arrival Strings and also matching regex for IATA format (3-letter code)
-        if (departure == null || arrival == null
-                || !departure.toUpperCase().matches("^[A-Z]{3}$")
+        if (!departure.toUpperCase().matches("^[A-Z]{3}$")
                 || !arrival.toUpperCase().matches("^[A-Z]{3}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid departure or arrival codes");
         }
@@ -76,6 +81,11 @@ public class FlightV1Controller {
         if (departure.toUpperCase().equals(arrival.toUpperCase())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure and arrival codes are the same");
         }
+
+        // There was previously a condition here that arrivalDateTime.isAfter(departureDateTime), but as they are
+        // *local* time-zones for each airport, it is possible that local time at arrival can be before the local time
+        // you departed at. Eg if a flight takes 30 minutes but you fly into a timezone 1 hour earlier than the departure
+        // airport's timezone.
 
         logger.debug("Valid params given");
     }

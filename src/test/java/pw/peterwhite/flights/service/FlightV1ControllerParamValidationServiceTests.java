@@ -14,7 +14,6 @@ import pw.peterwhite.flights.helpers.TestHelper;
 import pw.peterwhite.flights.services.FlightService;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
@@ -41,7 +40,7 @@ class FlightV1ControllerParamValidationServiceTests {
     }
 
     @Test
-    void NoParams_Interconnections_isBadRequest() throws Exception {
+    void noParams_Interconnections_isBadRequest() throws Exception {
         //Arrange
 
         //Act
@@ -55,8 +54,27 @@ class FlightV1ControllerParamValidationServiceTests {
         verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
+
     @Test
-    void InvalidDateTime_Interconnections_isBadRequest() throws Exception {
+    void emptyParams_Interconnections_isBadRequest() throws Exception {
+        //Arrange
+
+        //Act
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
+                .param("departure", "")
+                .param("arrival", "")
+                .param("departureDateTime", "")
+                .param("arrivalDateTime", ""))
+                .andDo(MockMvcResultHandlers.print());
+
+        //Assert
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Departure/arrival date-times must be provided"));
+        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
+    }
+
+    @Test
+    void invalidDateTime_Interconnections_isBadRequest() throws Exception {
         //Arrange
         String departureDateTimeString = "2012-13-13T25:00"; // Invalid departure, cannot be parsed by LocalDateTime
 
@@ -74,33 +92,16 @@ class FlightV1ControllerParamValidationServiceTests {
     }
 
     @Test
-    void ArrivalBeforeDeparture_Interconnections_isBadRequest() throws Exception {
+    void departureBeforeNow_Interconnections_isBadRequest() throws Exception {
         //Arrange
+        String departureDateTimeString = "1999-12-31T23:59";
 
         //Act
         ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
                 .param("departure", TestHelper.TEST_DEPARTURE)
                 .param("arrival", TestHelper.TEST_ARRIVAL)
-                .param("departureDateTime", TestHelper.TEST_ARRIVAL_DATE_TIME_STRING) // swap arrival and departure
-                .param("arrivalDateTime", TestHelper.TEST_DEPARTURE_DATE_TIME_STRING)) // constants in params
-                .andDo(MockMvcResultHandlers.print());
-
-        //Assert
-        resultActions.andExpect(status().isBadRequest())
-                .andExpect(status().reason("Arrival time is before departure time"));
-        verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
-    }
-
-    @Test
-    void DepartureBeforeNow_Interconnections_isBadRequest() throws Exception {
-        //Arrange
-
-        //Act
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
-                .param("departure", TestHelper.TEST_DEPARTURE)
-                .param("arrival", TestHelper.TEST_ARRIVAL)
-                .param("departureDateTime", LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE_TIME))
-                .param("arrivalDateTime", LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_DATE_TIME)))
+                .param("departureDateTime", departureDateTimeString)
+                .param("arrivalDateTime", TestHelper.TEST_ARRIVAL_DATE_TIME_STRING))
                 .andDo(MockMvcResultHandlers.print());
 
         //Assert
@@ -110,7 +111,7 @@ class FlightV1ControllerParamValidationServiceTests {
     }
 
     @Test
-    void InvalidAirportParams_Interconnections_isBadRequest() throws Exception {
+    void invalidAirportParams_Interconnections_isBadRequest() throws Exception {
         //Arrange
         String departure = "123"; // Does not match IATA codes
         String arrival = "456";
@@ -130,7 +131,7 @@ class FlightV1ControllerParamValidationServiceTests {
     }
 
     @Test
-    void SameAirportParams_Interconnections_isBadRequest() throws Exception {
+    void sameAirportParams_Interconnections_isBadRequest() throws Exception {
         //Arrange
 
         //Act
@@ -148,7 +149,7 @@ class FlightV1ControllerParamValidationServiceTests {
     }
 
     @Test
-    void ValidParams_Interconnections_isOk() throws Exception {
+    void validParams_Interconnections_isOk() throws Exception {
         //Arrange
         //Mock call to flightService as we're only testing Parameter Validation in this suite
         when(flightService.getAvailableFlights(anyString(), anyString(),
