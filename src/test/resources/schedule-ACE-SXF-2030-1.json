@@ -5,8 +5,6 @@
             "day": 1,
             "flights": [
                 {
-                    "carrierCode": "FR",
-                    "number": "8313",
                     "departureTime": "14:35",
                     "arrivalTime": "20:30"
                 }
@@ -16,8 +14,6 @@
             "day": 4,
             "flights": [
                 {
-                    "carrierCode": "FR",
-                    "number": "3493",
                     "departureTime": "09:25",
                     "arrivalTime": "15:20"
                 }
@@ -27,8 +23,6 @@
             "day": 7,
             "flights": [
                 {
-                    "carrierCode": "FR",
-                    "number": "3493",
                     "departureTime": "11:00",
                     "arrivalTime": "16:55"
                 }
