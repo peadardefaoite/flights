@@ -7,8 +7,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 import org.springframework.web.server.ResponseStatusException;
 import pw.peterwhite.flights.config.FlightConfigProperties;
 import pw.peterwhite.flights.dto.Journey.Leg;
@@ -21,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -51,19 +51,35 @@ public class RyanairApiClient extends Client {
         ResponseEntity<List<Route>> result;
         try {
             // Make call of Routes API using restTemplate.exchange(url, httpMethod, requestEntity, responseType)
-             result = restTemplate.exchange(routesApi,
+            result = restTemplate.exchange(routesApi,
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<List<Route>>() {
                     });
-        } catch (RestClientException ex) {
-            logger.error("Routes API Client error: " + ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred when communicating with the Routes API");
+        } catch (HttpClientErrorException ex) {
+            switch (ex.getRawStatusCode()) {
+                case 400:
+                    logger.info("Bad params supplied to Routes API");
+                    break;
+                case 404:
+                    logger.info("No data found from Routes API");
+                    break;
+            }
+            return Collections.emptyList();
+        } catch (HttpServerErrorException ex) {
+            logger.error("Routes API Server error: " + ex.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Upstream Routes API error");
+        } catch (UnknownHttpStatusCodeException ex) {
+            logger.error("Routes API returned unknown HTTP status: " + ex.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Upstream Routes API error");
         } catch (Exception ex) {
             logger.error("Routes API Response error: " + ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred with the response from the Routes API");
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Upstream Routes API error");
         }
-        checkResponse(result);
+
+        if (result == null) {
+            return Collections.emptyList();
+        }
 
         List<Route> routes = result.getBody();
         if (routes != null) {
@@ -74,19 +90,26 @@ public class RyanairApiClient extends Client {
     }
 
     public List<Leg> getSchedules(Route route, LocalDateTime departureDateTime, LocalDateTime arrivalDateTime) {
-        logger.info(String.format("Querying schedules for Route %s-%s", route.airportFrom, route.airportTo));
+        //logger.info(String.format("Querying schedules for Route %s-%s", route.airportFrom, route.airportTo));
         List<Leg> availableLegs = new ArrayList<>();
+
+        String airportFrom = route.getAirportFrom();
+        String airportTo = route.getAirportTo();
+        if (airportFrom == null || airportTo == null) {
+            logger.warn("Malformed route");
+            return Collections.emptyList();
+        }
 
         // For each month, get the schedules for our Route. Flatten the response to a dto.Journey.Leg format and
         // filter to those which fit within our departure-arrival date-times.
         for (LocalDateTime dateTime = departureDateTime;
-             dateTime.getMonthValue() <= arrivalDateTime.getMonthValue();
+             dateTime.getYear() != arrivalDateTime.getYear() && dateTime.getMonthValue() <= arrivalDateTime.getMonthValue();
              dateTime = dateTime.plusMonths(1)) {
 
             int year = dateTime.getYear();
             int month = dateTime.getMonthValue();
 
-            String apiPath = String.format("/timtbl/3/schedules/%s/%s/years/%s/months/%s", route.airportFrom, route.airportTo, year, month);
+            String apiPath = String.format("/timtbl/3/schedules/%s/%s/years/%s/months/%s", airportFrom, airportTo, year, month);
             URI schedulesApi = URI.create(baseUrl + apiPath);
 
             logger.info("Making request to Schedules API: " + schedulesApi);
@@ -98,24 +121,37 @@ public class RyanairApiClient extends Client {
                         HttpMethod.GET,
                         null,
                         Schedule.class);
-            } catch (RestClientException ex) {
-                logger.error("Schedules API Client error: " + ex.getMessage());
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred when communicating with the Schedules API");
-            } catch (Exception ex) {
+            } catch (HttpClientErrorException ex) {
+                switch (ex.getRawStatusCode()) {
+                    case 400:
+                        logger.info("Bad params supplied to Schedules API: " + ex.getMessage());
+                        break;
+                    case 404:
+                        logger.info("No data found from Schedules API");
+                        break;
+                    case 429:
+                        // Should implement retry mechanism for this, but for now, just throw a 500 error
+                        logger.info("Rate-limited by Schedules API");
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server has been rate-limited by Upstream API");
+                    default:
+                        logger.warn("Schedules API returned an unexpected 4xx");
+                }
+                continue;
+            } catch (HttpServerErrorException ex) {
                 logger.error("Schedules API Response error: " + ex.getMessage());
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred with the response from the Schedules API");
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Upstream Schedules API error");
+            } catch (HttpStatusCodeException ex) {
+                continue;
             }
-
-            checkResponse(result);
 
             Schedule schedule = result.getBody();
             if (schedule == null) {
                 continue;
             }
 
-            List<Leg> schedules = flattenSchedule(route, year, schedule);
+            List<Leg> schedules = flattenSchedule(airportFrom, airportTo, year, schedule);
 
-            // Flight departure is at or after our specified departure date-time
+            // Flight departure is at or after our specified departure date-time ie
             Predicate<Leg> departurePredicate = flight -> flight.getDepartureTime().isAfter(departureDateTime) ||
                     flight.getDepartureTime().isEqual(departureDateTime);
 
@@ -135,7 +171,7 @@ public class RyanairApiClient extends Client {
         return availableLegs;
     }
 
-    private List<Leg> flattenSchedule(Route route, int year, Schedule schedule) {
+    private List<Leg> flattenSchedule(String airportFrom, String airportTo, int year, Schedule schedule) {
         // Response from Schedules API is messy with month, day, and times all separated and no year.
         // Flatten it to dto.Journey.Leg format with LocalDateTime for the departure and arrival date-times.
         // Also have access to the route information at this scope, so include it now.
@@ -150,28 +186,10 @@ public class RyanairApiClient extends Client {
                 LocalTime departureTime = LocalTime.parse(details.getDepartureTime());
                 LocalTime arrivalTime = LocalTime.parse(details.getArrivalTime());
 
-                legs.add(new Leg(route.airportFrom, route.airportTo,
+                legs.add(new Leg(airportFrom, airportTo,
                         LocalDateTime.of(date, departureTime), LocalDateTime.of(date, arrivalTime)));
             }
         }
         return legs;
-    }
-
-    // Helper method for checking if Response from API is ok
-    private void checkResponse(ResponseEntity result) throws ResponseStatusException {
-        if (result == null) {
-            logger.error("Null response from upstream API");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error in communicating with upstream API");
-        }
-
-        HttpStatus statusCode = result.getStatusCode();
-
-        if (statusCode.is4xxClientError()) {
-            logger.error("Error in information supplied to Upstream API");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error in information supplied to Upstream API");
-        } else if (statusCode.is5xxServerError()) {
-            logger.warn("Error in Upstream API: " + statusCode.getReasonPhrase());
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Error in upstream API");
-        }
     }
 }
