@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import pw.peterwhite.flights.dto.Flight;
+import pw.peterwhite.flights.dto.Journey;
 import pw.peterwhite.flights.services.FlightService;
 
 import java.time.LocalDateTime;
@@ -41,12 +41,12 @@ public class FlightV1Controller {
     @RequestMapping(path = "/interconnections",
             method = GET,
             params = {"departure", "arrival", "departureDateTime", "arrivalDateTime"})
-    public List<Flight> interconnections(String departure,
-                                         String arrival,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureDateTime,
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime arrivalDateTime) {
+    public List<Journey> interconnections(String departure,
+                                          String arrival,
+                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureDateTime,
+                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime arrivalDateTime) {
         validateParams(departure, arrival, departureDateTime, arrivalDateTime);
-        logger.debug("Valid params given");
+
         return flightService.getAvailableFlights(departure.toUpperCase(), arrival.toUpperCase(), departureDateTime, arrivalDateTime);
     }
 
@@ -54,6 +54,14 @@ public class FlightV1Controller {
                                 String arrival,
                                 LocalDateTime departureDateTime,
                                 LocalDateTime arrivalDateTime) {
+        if (departureDateTime.isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure time is in the past");
+        }
+
+        if (arrivalDateTime.isBefore(departureDateTime)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arrival time is before departure time");
+        }
+
         // Non-null departure/arrival Strings and also matching regex for IATA format (3-letter code)
         if (departure == null || !departure.toUpperCase().matches("^[A-Z]{3}$")
                 || arrival == null || !arrival.toUpperCase().matches("^[A-Z]{3}$")) {
@@ -64,12 +72,6 @@ public class FlightV1Controller {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure and arrival codes are the same");
         }
 
-        if (departureDateTime.isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure time is in the past");
-        }
-
-        if (arrivalDateTime.isBefore(departureDateTime)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arrival time is before departure time");
-        }
+        logger.debug("Valid params given");
     }
 }

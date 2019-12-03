@@ -2,11 +2,9 @@ package pw.peterwhite.flights.helpers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.springframework.util.ResourceUtils;
-import pw.peterwhite.flights.dto.Flight;
-import pw.peterwhite.flights.dto.Flight.Leg;
+import pw.peterwhite.flights.dto.Journey;
+import pw.peterwhite.flights.dto.Journey.Leg;
 import pw.peterwhite.flights.dto.Route;
 import pw.peterwhite.flights.dto.Schedule;
 
@@ -37,28 +35,18 @@ public class TestHelper {
 
     private static List<Route> routes;
 
-    public static List<Flight> generateFlightList(Map<String, String> parameters) {
+    public static List<Journey> generateFlightList(Map<String, String> parameters) {
         Leg leg = new Leg(parameters.get("departure"), parameters.get("arrival"),
                 LocalDateTime.parse(parameters.get("departureDateTime"), DateTimeFormatter.ISO_DATE_TIME),
                 LocalDateTime.parse(parameters.get("arrivalDateTime"), DateTimeFormatter.ISO_DATE_TIME));
         List<Leg> legs = new ArrayList<>();
         legs.add(leg);
 
-        Flight flight = new Flight(legs.size() - 1 , legs);
+        Journey journey = new Journey(legs.size() - 1 , legs);
 
-        List<Flight> flightList = new ArrayList<>();
-        flightList.add(flight);
-        return flightList;
-    }
-
-    public static Map<String, String> generateParams() {
-        Map<String, String> params = new HashMap<>();
-        params.put("departure", "DUB");
-        params.put("arrival", "SXF");
-        params.put("departureDateTime",TEST_DEPARTURE_DATE_TIME_STRING);
-        params.put("arrivalDateTime", TEST_ARRIVAL_DATE_TIME_STRING);
-
-        return params;
+        List<Journey> journeyList = new ArrayList<>();
+        journeyList.add(journey);
+        return journeyList;
     }
 
     public static List<Route> generateRouteList() {
@@ -77,7 +65,7 @@ public class TestHelper {
         return routes;
     }
 
-    public static List<Schedule> generateScheduleList() {
+    public static List<Leg> generateLegsList() {
         return new ArrayList<>();
     }
 }

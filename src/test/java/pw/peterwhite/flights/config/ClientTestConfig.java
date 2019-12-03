@@ -6,14 +6,10 @@ import org.springframework.web.client.RestTemplate;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.services.FlightService;
 
-import java.util.ArrayList;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @TestConfiguration
-public class ServiceTestConfig {
+public class ClientTestConfig {
 
     @Bean
     public FlightConfigProperties flightConfigProperties() {
@@ -27,10 +23,9 @@ public class ServiceTestConfig {
 
     @Bean
     public RyanairApiClient ryanairApiClient() {
-        RyanairApiClient mockRyanairApiClient = mock(RyanairApiClient.class);
-        when(mockRyanairApiClient.getSchedules(any(), any(), any())).thenReturn(new ArrayList<>());
-        when(mockRyanairApiClient.getRoutes()).thenReturn(new ArrayList<>());
-        return mockRyanairApiClient;
+        RyanairApiClient ryanairApiClient = new RyanairApiClient(flightConfigProperties());
+        ryanairApiClient.setBaseUrl("https://my-test-domain.lol");
+        return ryanairApiClient;
     }
 
     @Bean

@@ -4,30 +4,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.config.IntegrationTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
-import pw.peterwhite.flights.dto.Flight;
 import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
-import pw.peterwhite.flights.helpers.TestHelper;
 import pw.peterwhite.flights.services.FlightService;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.reset;
 
 @WebMvcTest(controllers = FlightV1Controller.class)
 @Import(IntegrationTestConfig.class)

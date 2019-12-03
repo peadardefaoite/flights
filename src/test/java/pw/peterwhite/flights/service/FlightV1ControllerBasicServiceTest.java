@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import pw.peterwhite.flights.config.ServiceTestConfig;
+import pw.peterwhite.flights.config.ControllerTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * No network requests are made in this test.
  */
 @WebMvcTest(controllers = FlightV1Controller.class)
-@Import(ServiceTestConfig.class)
+@Import(ControllerTestConfig.class)
 class FlightV1ControllerBasicServiceTest {
     @Autowired
     private MockMvc mockMvc;

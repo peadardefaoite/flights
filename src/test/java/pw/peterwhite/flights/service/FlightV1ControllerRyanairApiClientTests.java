@@ -12,15 +12,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.web.client.RestTemplate;
 import pw.peterwhite.flights.clients.RyanairApiClient;
-import pw.peterwhite.flights.config.ControllerTestConfig;
+import pw.peterwhite.flights.config.ClientTestConfig;
 import pw.peterwhite.flights.config.ServiceTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 import pw.peterwhite.flights.helpers.LocalDateTimeAdapter;
 import pw.peterwhite.flights.helpers.TestHelper;
-import pw.peterwhite.flights.services.FlightService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,11 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Service tests for
+ * Service tests for testing the RyanairApiClient level of code
+ * Network requests are mocked out for RestTemplate(...)
  */
 @WebMvcTest(controllers = FlightV1Controller.class)
-@Import(ServiceTestConfig.class)
-class FlightV1ControllerFlightServiceTests {
+@Import(ClientTestConfig.class)
+class FlightV1ControllerRyanairApiClientTests {
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();
@@ -48,15 +47,13 @@ class FlightV1ControllerFlightServiceTests {
 
     @BeforeEach
     private void setup() {
-        reset(ryanairApiClient);
         reset(restTemplate);
     }
 
     @Test
     void ValidParams_Interconnections_isOk() throws Exception {
         //Arrange
-        when(ryanairApiClient.getRoutes()).thenReturn(TestHelper.generateRouteList());
-        when(ryanairApiClient.getSchedules(any(), any(), any())).thenReturn(TestHelper.generateLegsList());
+
 
         //Act
         ResultActions resultActions = mockMvc.perform(get("/api/v1/interconnections")
@@ -69,7 +66,5 @@ class FlightV1ControllerFlightServiceTests {
         //Assert
         resultActions.andExpect(status().isOk()).andExpect(content().string("[]"));
 
-        verify(ryanairApiClient, times(1)).getRoutes();
-        verify(ryanairApiClient, times(1)).getSchedules(any(), any(), any());
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import pw.peterwhite.flights.config.ServiceTestConfig;
+import pw.peterwhite.flights.config.ControllerTestConfig;
 import pw.peterwhite.flights.controllers.FlightV1Controller;
 import pw.peterwhite.flights.helpers.TestHelper;
 import pw.peterwhite.flights.services.FlightService;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Calls to flightService are mocked out. Network requests are also not made in this suite.
  */
 @WebMvcTest(controllers = FlightV1Controller.class)
-@Import(ServiceTestConfig.class)
+@Import(ControllerTestConfig.class)
 class FlightV1ControllerParamValidationServiceTests {
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +50,8 @@ class FlightV1ControllerParamValidationServiceTests {
 
         //Assert
         resultActions.andExpect(status().isBadRequest())
-                .andExpect(status().reason("Parameter conditions \"departure, arrival, departureDateTime, arrivalDateTime\" not met for actual request parameters: "));
+                .andExpect(status().reason("Parameter conditions \"departure, arrival, departureDateTime, " +
+                        "arrivalDateTime\" not met for actual request parameters: "));
         verify(flightService, never()).getAvailableFlights(any(), any(), any(), any());
     }
 
@@ -163,8 +164,8 @@ class FlightV1ControllerParamValidationServiceTests {
                 .andDo(MockMvcResultHandlers.print());
 
         //Assert
-        resultActions.andExpect(status().isOk()).andExpect(content().string(""));
-        // verify we pass validation and go to
+        resultActions.andExpect(status().isOk()).andExpect(content().string("[]"));
+        // verify we pass validation and go to call flightService.getAvailableFlights(...)
         verify(flightService, times(1))
                 .getAvailableFlights(TestHelper.TEST_DEPARTURE, TestHelper.TEST_ARRIVAL,
                         TestHelper.TEST_DEPARTURE_DATE_TIME, TestHelper.TEST_ARRIVAL_DATE_TIME);
