@@ -213,7 +213,7 @@ class FlightV1ControllerFullServiceTests {
            5 meet the requirements with 2 hour stopover in BCN: AF, AG, BF, BG, CG
 
            Expected calls to Routes API: 1
-           Expected calls to Schedules API: 10 (will need 10 URIs and 9 Schedules to be returned)
+           Expected calls to Schedules API: 10 (will need 10 URIs and 9 Schedules to be returned, one is not found)
            Total suitable flights: 7
          */
 

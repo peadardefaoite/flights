@@ -9,6 +9,8 @@ This microservice consumes two Ryanair APIs to calculate this data, but can be e
 * Maven 3 - `mvn` binary path will need to be set on your `$PATH` environment variable.
 
 Optionally, there is a `mvnw` in the root of the repo. This can be used in place of your own Maven installation.
+Also, you can import the project into IntelliJ and compile/run tests via the IDE.
+
 All other dependencies will be downloaded during build, such as Spring Boot, Mockito, etc.
 
 ## Running
@@ -157,3 +159,13 @@ Given the wide range of tests that could be taken involving different schedules,
 
 #### Manual testing
 Manual sanity tests were performed with the live APIs. All performed as expected.
+
+#### Code coverage
+The test suites were run through IntelliJ with code coverage turned on.
+
+| Classes             |   Line Coverage   |
+|---------------------|:-----------------:|
+| FlightV1Controller  |    95%   |
+| FlightService       |    90%   |
+| RyanairApiClient    |    72%   |
+| Overall             |    71%   |
