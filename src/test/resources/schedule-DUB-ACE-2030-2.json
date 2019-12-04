@@ -268,19 +268,6 @@
                     "arrivalTime": "11:25"
                 }
             ]
-        },
-        {
-            "day": 29,
-            "flights": [
-                {
-                    "departureTime": "06:25",
-                    "arrivalTime": "10:35"
-                },
-                {
-                    "departureTime": "13:55",
-                    "arrivalTime": "18:05"
-                }
-            ]
         }
     ]
 }
