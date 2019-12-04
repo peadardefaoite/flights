@@ -37,12 +37,18 @@ public class FlightService {
                                              String arrival,
                                              LocalDateTime departureDateTime,
                                              LocalDateTime arrivalDateTime) {
+        if (departure == null || arrival == null || departureDateTime == null || arrivalDateTime == null) {
+            logger.error("Invalid parameters supplied to FlightService.getAvailableFlights");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         logger.info(String.format("Getting flights from %s-%s between %s and %s", departure, arrival, departureDateTime, arrivalDateTime));
 
         List<Route> allRoutes = ryanairApiClient.getRoutes();
         logger.info("Total routes: " + allRoutes.size());
 
         String routeOperator = flightConfigProperties.getRouteOperator();
+        logger.info("Removing routes that have a non-null connectingAirport and the operator is not '" + routeOperator + "'");
         allRoutes.removeIf(route -> route.getConnectingAirport() != null || !Objects.equals(route.getOperator(), routeOperator));
 
         if (allRoutes.size() == 0) {
@@ -50,6 +56,7 @@ public class FlightService {
             return Collections.emptyList();
         }
 
+        // List to hold all suitable journeys
         List<Journey> journeyList = new ArrayList<>();
 
         // Direct flights
@@ -59,25 +66,18 @@ public class FlightService {
         if (directRoutes.size() > 1) {
             logger.error("Error in Routes API. Returned more than one direct route for " + departure + "-" + arrival);
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Routes API returned more than one direct route");
-        }
-
-        if (directRoutes.size() == 1) {
+        } else if (directRoutes.size() == 1) {
+            logger.info("Direct route found");
             List<Leg> directFlights = ryanairApiClient.getSchedules(directRoutes.get(0), departureDateTime, arrivalDateTime);
-            if (!directFlights.isEmpty()) {
-                journeyList.add(new Journey(0, directFlights));
+            for (Leg flights : directFlights) {
+                journeyList.add(new Journey(0, Collections.singletonList(flights)));
             }
+        } else {
+            logger.info("No direct route found");
         }
         // End Direct flights
 
-        // If the specified arrival date-time is less than 2 hours after the specified departure date-time,
-        // then we cannot have any journeys with 1 stop. The second leg would always be after the specified
-        // arrival time.
-        if (departureDateTime.plusHours(2).isAfter(arrivalDateTime)) {
-            return journeyList;
-        }
-
         // Journeys with 1 stop
-
         Predicate<Route> isDepartureRoute = route -> departure.equals(route.getAirportFrom());
         List<Route> departureRoutes = allRoutes.stream().filter(isDepartureRoute).collect(Collectors.toList());
 
@@ -85,19 +85,20 @@ public class FlightService {
         List<Route> arrivalRoutes = allRoutes.stream().filter(isArrivalRoute).collect(Collectors.toList());
 
         // Remove route from both Lists if the intermediate airport doesn't match, that is,
-        // any(airportTo) of departureRoutes != any(airportFrom) of arrivalRoutes
+        // (airportTo) of departureRoutes != any(airportFrom) of arrivalRoutes and vice versa
         departureRoutes.removeIf(departureRoute -> arrivalRoutes.stream()
                 .noneMatch(arrivalRoute -> Objects.equals(arrivalRoute.getAirportFrom(), departureRoute.getAirportTo())));
         arrivalRoutes.removeIf(arrivalRoute -> departureRoutes.stream()
                 .noneMatch(departureRoute -> Objects.equals(departureRoute.getAirportTo(), arrivalRoute.getAirportFrom())));
 
         if (departureRoutes.size() != arrivalRoutes.size()) {
+            // Expect no duplicate Routes that would cause this
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Bad data from the Routes API");
         }
 
         logger.info("Available indirect flights: " + departureRoutes.size());
 
-        // Sort our ArrayLists so that the departureRoutes[i].airportTo == arrivalRoutes[i].airportFrom
+        // Sort our ArrayLists so that departureRoutes[i].airportTo == arrivalRoutes[i].airportFrom
         departureRoutes.sort(Comparator.comparing(Route::getAirportTo));
         arrivalRoutes.sort(Comparator.comparing(Route::getAirportFrom));
 
@@ -107,22 +108,30 @@ public class FlightService {
             Route departureRoute = departureIterator.next();
             Route arrivalRoute = arrivalIterator.next();
 
-            List<Leg> departureLegs = ryanairApiClient.getSchedules(departureRoute, departureDateTime, arrivalDateTime.minusHours(2));
-            List<Leg> arrivalLegs = ryanairApiClient.getSchedules(arrivalRoute, departureDateTime.plusHours(2), arrivalDateTime);
-
-            if (departureLegs.isEmpty() || arrivalLegs.isEmpty()) {
+            List<Leg> departureLegs = ryanairApiClient.getSchedules(departureRoute, departureDateTime, arrivalDateTime);
+            if (departureLegs.isEmpty()) {
+                // No suitable departures found, no point checking for the arrival legs
+                logger.info("No first legs found for " + departureRoute.getAirportFrom() + "-" + departureRoute.getAirportTo());
                 continue;
             }
 
-            logger.info("");
+            List<Leg> arrivalLegs = ryanairApiClient.getSchedules(arrivalRoute, departureDateTime, arrivalDateTime);
+            if (arrivalLegs.isEmpty()) {
+                // No suitable arrivals found.
+                logger.info("No second legs found for " + arrivalRoute.getAirportFrom() + "-" + arrivalRoute.getAirportTo());
+                continue;
+            }
 
-
-            //Leg departureLeg = new Leg(departureRoute.airportFrom, departureRoute.airportTo, null, null);
-            //Leg arrivalLeg = new Leg(arrivalRoute.airportFrom, arrivalRoute.airportTo, null, null);
-            //List<Leg> legs = Arrays.asList(departureLeg, arrivalLeg);
-            //journeyList.add(new Journey(1, legs));
+            for (Leg firstLeg : departureLegs) {
+                for (Leg secondLeg : arrivalLegs) {
+                    // 2nd leg departure time from intermediate airport cannot be before 2 hours after 1st leg arrival time
+                    if (!secondLeg.getDepartureTime().isBefore(firstLeg.getArrivalTime().plusHours(2))) {
+                        journeyList.add(new Journey(1, Arrays.asList(firstLeg, secondLeg)));
+                    }
+                }
+            }
         }
-
+        logger.info("Total valid journeys found: " + journeyList.size());
         return journeyList;
     }
 }

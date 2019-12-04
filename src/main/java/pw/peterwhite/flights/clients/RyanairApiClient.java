@@ -7,7 +7,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 import pw.peterwhite.flights.config.FlightConfigProperties;
 import pw.peterwhite.flights.dto.Journey.Leg;
@@ -19,6 +22,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,9 +30,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 public class RyanairApiClient extends Client {
     private static final Log logger = LogFactory.getLog(RyanairApiClient.class);
 
@@ -38,6 +39,7 @@ public class RyanairApiClient extends Client {
     @Autowired
     public RyanairApiClient(FlightConfigProperties flightConfigProperties) {
         this.baseUrl = flightConfigProperties.getRyanairApiClientBaseUrl();
+        logger.info("RyanairApiClient instantiated with baseUrl: " + baseUrl);
     }
 
     /**
@@ -51,11 +53,12 @@ public class RyanairApiClient extends Client {
      *          * 502 if the API returns a 5xx or unknown status code
      */
     public List<Route> getRoutes() {
-        final URI routesApi = URI.create(baseUrl + "/locate/3/routes/");
-        logger.info("Making request to Routes API: " + routesApi);
+        String routesApiPath = "/locate/3/routes/";
+        final URI routesApi = URI.create(baseUrl + routesApiPath);
+        logger.info("Making request to Routes API: " + routesApiPath);
         ResponseEntity<List<Route>> result;
         try {
-            // Make call of Routes API using restTemplate.exchange(url, httpMethod, requestEntity, responseType)
+            // Make call to Routes API using restTemplate.exchange(url, httpMethod, requestEntity, responseType)
             result = restTemplate.exchange(routesApi,
                     HttpMethod.GET,
                     null,
@@ -92,15 +95,10 @@ public class RyanairApiClient extends Client {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upstream Routes API error");
         }
 
-        if (result == null) {
-            return Collections.emptyList();
-        }
-
         List<Route> routes = result.getBody();
         if (routes != null) {
             routes.removeIf(Objects::isNull);
         }
-
         return routes;
     }
 
@@ -122,7 +120,6 @@ public class RyanairApiClient extends Client {
     public List<Leg> getSchedules(Route route, LocalDateTime departureDateTime, LocalDateTime arrivalDateTime) {
         String airportFrom = route.getAirportFrom();
         String airportTo = route.getAirportTo();
-        logger.info(String.format("Querying schedules for Route %s-%s", airportFrom, airportTo));
         if (airportFrom == null || airportTo == null) {
             logger.warn("Malformed route");
             return Collections.emptyList();
@@ -130,26 +127,28 @@ public class RyanairApiClient extends Client {
 
         List<Leg> availableLegs = new ArrayList<>();
 
+        String scheduleApiPath = "/timtbl/3/schedules/%s/%s/years/%s/months/%s";
+
         // For each month, get the schedules for our Route. Flatten the response to a dto.Journey.Leg format and
         // filter to those which fit within our departure-arrival date-times.
         // Assumption is made here that there are no departing flights that arrive the day before in a
         // different timezone. Edge case scenario could cause this loop to fail where a flight departs on 12:01AM on 1/1/2020
-        // but arrives at 11:59PM on 31/12/2019. All flights must depart and land on the same day.
+        // but arrives at 11:59PM on 31/12/2019. All flights must depart and land on the same day in their local times.
         for (LocalDateTime dateTime = departureDateTime;
-             dateTime.getYear() <= arrivalDateTime.getYear() && dateTime.getMonthValue() <= arrivalDateTime.getMonthValue();
+             !YearMonth.from(dateTime).isAfter(YearMonth.from(arrivalDateTime));
              dateTime = dateTime.plusMonths(1)) {
 
             int year = dateTime.getYear();
             int month = dateTime.getMonthValue();
 
-            String apiPath = String.format("/timtbl/3/schedules/%s/%s/years/%s/months/%s", airportFrom, airportTo, year, month);
+            String apiPath = String.format(scheduleApiPath, airportFrom, airportTo, year, month);
             URI schedulesApi = URI.create(baseUrl + apiPath);
 
-            logger.info("Making request to Schedules API: " + schedulesApi);
+            logger.info("Making request to Schedules API: " + apiPath);
 
             ResponseEntity<Schedule> result;
             try {
-                // Make call Schedules API using restTemplate.exchange(url, httpMethod, requestEntity, responseType)
+                // Make call to Schedules API using restTemplate.exchange(url, httpMethod, requestEntity, responseType)
                 result = restTemplate.exchange(schedulesApi,
                         HttpMethod.GET,
                         null,
