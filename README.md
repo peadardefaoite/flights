@@ -13,21 +13,45 @@ Also, you can import the project into IntelliJ and compile/run tests via the IDE
 
 All other dependencies will be downloaded during build, such as Spring Boot, Mockito, etc.
 
+## Project Structure
+```
+|-- main    : Prodcution code
+|   |-- java/pw/peterwhite.pw
+|   |   |-- clients     : Code for communicating with external APIs
+|   |   |-- config      : Code for loading config and Bean init
+|   |   |-- controllers : Entry point for handling/validating requests 
+|   |   |-- dto         : Data Transfer Objects for marshalling to/from JSON
+|   |   |-- services    : Main code logic for handling with requests and external APIs 
+|   |   `-- FlightsApplication  : Entry point for Spring Boot init
+|   `-- resources
+|       `-- application.properties : Config keys
+|-- test    : Test code
+|   |-- java/pw/peterwhite.pw
+|   |   |-- config      : Code for mock Beans init
+|   |   |-- helpers     : Helper functions used for tests 
+|   |   `-- services    : Service tests for Application 
+|   `-- resources
+|       |-- application.properties  : Config keys
+|       |-- routes-subset           : Test data for Routes API Json
+|       `-- schedules-{}.json       : Test data for Schedules API Json
+```
+
 ## Running
 To compile and run tests, execute this command in your shell/command prompt
  
-```
+```shell script
 mvn clean verify
 ```
 
 This will produce `target/flights-0.0.1-SNAPSHOT.jar`. To run the Spring Boot application, execute
 
-```
+```shell script
 java -jar target/flights-0.0.1-SNAPSHOT.jar
 ```
 
 This will start the Spring Boot application on `http://localhost:8080` by default.
-I recommend using [Postman](https://www.getpostman.com/) to send requests to the application. 
+I recommend using [Postman](https://www.getpostman.com/) to send requests to the application.
+Requests can also be performed in browser.
 
 ## Endpoints
 
@@ -61,11 +85,11 @@ There is no flight that arrives on the day before or the day after it departs.
 
 ## Known Bugs
 SpotBugs is enabled on this project. Execute 
-```
+```shell script
 mvn clean verify
 ``` 
 and provided all tests pass, then execute 
-```
+```shell script
 mvn spotbugs:gui
 ``` 
 to bring up a GUI for inspecting what bugs exist in the code. 
@@ -76,8 +100,8 @@ Currently there are 3 static analysis bugs:
     when calling the Routes API. As this is only used once in the code, I decided to keep as an anonymous class.
 
 ## Testing
-The repo contains a number of test suites for the application, at the controller, service, client levels.
-Network interactions are mocked out in the tests contained in the `service` folder. 
+The repo contains a number of test suites for the application, at the controller, service, and client levels.
+External network interactions are mocked out in the tests contained in the `service` folder. 
 They will respond instead with the test JSON constructed from real data of sample API requests.
 
 The test data is a subset of that which comes from the real APIs (listed below), reduced to make it easier to calculate expected results, along with the irrelevant fields removed.
@@ -117,7 +141,7 @@ My method of testing this API is to do full service tests, that is, we send a cr
 This method can cut down on the amount of extraneous unit testing that is done at the class level, and allows us to change the internal workings of the API without having to change a
 bunch of unit tests at the same time, so long as the API response remains the same expected value.
  
-Various Spring Beans will get mocked in different test suites, meaning we can have them return whatever we choose to.
+Various Spring Beans (from `FlightConfig`) will be mocked in different test suites, meaning we can have them return whatever we choose to.
 We can also verify when these mock beans are called with specific parameters and how many times.
 This is done using the Mockito framework.
 
@@ -158,14 +182,239 @@ The happy path case was only tested in one scenario from the given test data.
 Given the wide range of tests that could be taken involving different schedules, I decided to intentionally limit the scope to a single case that would test the majority of code paths. 
 
 #### Manual testing
-Manual sanity tests were performed with the live APIs. All performed as expected.
+Manual sanity tests were performed with the real APIs. All performed as expected.
+
+Tests: 
+* URL: `localhost:8080/api/v1/interconnections?departure=DUB&arrival=SXF&departureDateTime=2019-12-31T23:59&arrivalDateTime=2020-01-01T23:00`  
+Travel period: 31st Dec 2019 23:59 -> 1st Jan 2020 23:00  
+Potential routes: 44 (1 direct and 43 with a stop)  
+Valid journeys found: 12 (1 direct flight and 11 with 1 stop)
+
+```json
+[
+    {
+        "stops": 0,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T14:20:00",
+                "arrivalTime": "2020-01-01T17:40:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "BLQ",
+                "departureTime": "2020-01-01T08:05:00",
+                "arrivalTime": "2020-01-01T11:40:00"
+            },
+            {
+                "departureAirport": "BLQ",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T13:40:00",
+                "arrivalTime": "2020-01-01T15:25:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "BRU",
+                "departureTime": "2020-01-01T08:20:00",
+                "arrivalTime": "2020-01-01T11:10:00"
+            },
+            {
+                "departureAirport": "BRU",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T21:30:00",
+                "arrivalTime": "2020-01-01T23:00:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "BRU",
+                "departureTime": "2020-01-01T16:30:00",
+                "arrivalTime": "2020-01-01T19:15:00"
+            },
+            {
+                "departureAirport": "BRU",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T21:30:00",
+                "arrivalTime": "2020-01-01T23:00:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "OPO",
+                "departureTime": "2020-01-01T10:50:00",
+                "arrivalTime": "2020-01-01T13:15:00"
+            },
+            {
+                "departureAirport": "OPO",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T15:30:00",
+                "arrivalTime": "2020-01-01T19:45:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "STN",
+                "departureTime": "2020-01-01T09:50:00",
+                "arrivalTime": "2020-01-01T11:15:00"
+            },
+            {
+                "departureAirport": "STN",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T18:10:00",
+                "arrivalTime": "2020-01-01T21:00:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "STN",
+                "departureTime": "2020-01-01T09:50:00",
+                "arrivalTime": "2020-01-01T11:15:00"
+            },
+            {
+                "departureAirport": "STN",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T19:55:00",
+                "arrivalTime": "2020-01-01T22:45:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "STN",
+                "departureTime": "2020-01-01T11:55:00",
+                "arrivalTime": "2020-01-01T13:15:00"
+            },
+            {
+                "departureAirport": "STN",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T18:10:00",
+                "arrivalTime": "2020-01-01T21:00:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "STN",
+                "departureTime": "2020-01-01T11:55:00",
+                "arrivalTime": "2020-01-01T13:15:00"
+            },
+            {
+                "departureAirport": "STN",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T19:55:00",
+                "arrivalTime": "2020-01-01T22:45:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "STN",
+                "departureTime": "2020-01-01T13:10:00",
+                "arrivalTime": "2020-01-01T14:30:00"
+            },
+            {
+                "departureAirport": "STN",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T18:10:00",
+                "arrivalTime": "2020-01-01T21:00:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "STN",
+                "departureTime": "2020-01-01T13:10:00",
+                "arrivalTime": "2020-01-01T14:30:00"
+            },
+            {
+                "departureAirport": "STN",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T19:55:00",
+                "arrivalTime": "2020-01-01T22:45:00"
+            }
+        ]
+    },
+    {
+        "stops": 1,
+        "legs": [
+            {
+                "departureAirport": "DUB",
+                "arrivalAirport": "STN",
+                "departureTime": "2020-01-01T15:30:00",
+                "arrivalTime": "2020-01-01T16:50:00"
+            },
+            {
+                "departureAirport": "STN",
+                "arrivalAirport": "SXF",
+                "departureTime": "2020-01-01T19:55:00",
+                "arrivalTime": "2020-01-01T22:45:00"
+            }
+        ]
+    }
+]
+```
+
 
 #### Code coverage
-The test suites were run through IntelliJ with code coverage turned on.
+The test suites were run through IntelliJ with code coverage turned on. 
+The main areas lacking are around exception handling in the `RyanairApiClient` with the `RestTemplate` reqeusts.
 
 | Classes             |   Line Coverage   |
 |---------------------|:-----------------:|
-| FlightV1Controller  |    95%   |
-| FlightService       |    90%   |
-| RyanairApiClient    |    72%   |
-| Overall             |    71%   |
+| FlightV1Controller  |        95%        |
+| FlightService       |        90%        |
+| RyanairApiClient    |        72%        |
+| Overall             |        71%        |
+
+## Potential improvements
+* The response from Routes API could be cached for a small period as it is unlikely to change per request.
+Given the size of the response (~1MB), this would save an expensive network request.
+* Similarly the Schedules API response could be cached for a shorter period than the Routes response, as Schedules are more likely to change in the short term.
+* Use a custom `ErrorHandler` with `RestTemplate` for external API requests.
+Currently the code uses the default, which raises non-`2xx` status codes as exceptions.
+* Addition of more clients for other airlines. The only client now is `RyanairApiClient`, but the `Client` class can be extended to others.
+* `429 Too Many Requests` handling: currently returns a `500 Internal Server Error` if an upstream API rate limits the microservice.
+This should be switched to a retry mechanism with back-off.
+* There are lots of calls to the Schedules API, this could be batched and run in parallel. 
+* More test scenarios such as for more data, different time ranges & routes, exception handling.
+* Searching for Journeys with more than 1 stop. 
+This would involve a refactor of `FlightService.getAvailableFlights` to use a bi-directional graph and search for potential routes in that graph with the desired number of stops.
