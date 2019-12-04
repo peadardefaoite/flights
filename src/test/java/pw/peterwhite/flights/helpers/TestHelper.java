@@ -10,6 +10,7 @@ import pw.peterwhite.flights.dto.Schedule;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class TestHelper {
     public static final LocalDateTime TEST_DEPARTURE_DATE_TIME = LocalDateTime.parse(TEST_DEPARTURE_DATE_TIME_STRING, DateTimeFormatter.ISO_DATE_TIME);
     public static final LocalDateTime TEST_ARRIVAL_DATE_TIME = LocalDateTime.parse(TEST_ARRIVAL_DATE_TIME_STRING, DateTimeFormatter.ISO_DATE_TIME);
     public static final String TEST_SCHEDULES_API = "https://my-test-domain.lol/timtbl/3/schedules/%s/%s/years/%s/months/%s";
+    public static final URI TEST_ROUTES_API = URI.create("https://my-test-domain.lol/locate/3/routes/");
 
     public static ResponseEntity<List<Route>> generateEmptyRoutesHttpResponse() {
         return ResponseEntity.ok().body(Collections.emptyList());
