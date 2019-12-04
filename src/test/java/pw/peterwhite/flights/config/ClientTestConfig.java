@@ -6,7 +6,8 @@ import org.springframework.web.client.RestTemplate;
 import pw.peterwhite.flights.clients.RyanairApiClient;
 import pw.peterwhite.flights.services.FlightService;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 @TestConfiguration
 public class ClientTestConfig {

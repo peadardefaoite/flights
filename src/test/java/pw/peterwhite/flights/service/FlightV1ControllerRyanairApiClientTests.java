@@ -29,12 +29,12 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static pw.peterwhite.flights.helpers.TestHelper.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Testing the RyanairApiClient level of code
